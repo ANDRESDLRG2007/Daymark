@@ -30,6 +30,8 @@ export class Home {
     }
 
     renderEmpty() {
+        setTimeout(() => this.attachEvents(), 0);
+
         return `
             <div class="container">
                 <div style="text-align: center; padding: 60px 20px;">
@@ -143,8 +145,8 @@ export class Home {
         const viewBtns = document.querySelectorAll('.view-btn');
         viewBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const newView = e.target.dataset.view;
-                // Cambiar vista completa
+                const newView = e.target.dataset.view || e.target.closest('.view-btn').dataset.view;
+                console.log('Cambiando vista a:', newView);
                 this.app.showHome(this.selectedGoal.id, newView);
             });
         });
@@ -155,8 +157,14 @@ export class Home {
             day.addEventListener('click', (e) => {
                 const date = e.target.dataset.date;
                 const dayData = this.selectedGoal.days.find(d => d.date === date);
-                if (dayData && (dayData.status === 'completed' || dayData.status === 'skipped')) {
-                    this.showDayDetailsModal(dayData);
+                if (dayData) {
+                    if (dayData.status === 'pending') {
+                        // Permitir marcar días anteriores
+                        this.showMarkDayModal(date);
+                    } else {
+                        // Mostrar detalles si ya está completado u omitido
+                        this.showDayDetailsModal(dayData);
+                    }
                 }
             });
         });
@@ -282,6 +290,100 @@ export class Home {
             if (e.target === modal) {
                 document.body.removeChild(modal);
             }
+        });
+    }
+
+    showMarkDayModal(date) {
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('es-ES', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Marcar día: ${formattedDate}</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-success" id="markCompleted" style="flex: 1;">
+                        ✓ Completado
+                    </button>
+                    <button class="btn btn-skip" id="markSkipped" style="flex: 1;">
+                        ⊘ Omitido
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.close-btn').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+
+        modal.querySelector('#markCompleted').addEventListener('click', () => {
+            if (this.app.settings.dailyDescription) {
+                this.showDescriptionModal(date, 'completed');
+            } else {
+                this.app.markDay(this.selectedGoal.id, date, 'completed');
+                this.app.showHome(this.selectedGoal.id);
+            }
+            document.body.removeChild(modal);
+        });
+
+        modal.querySelector('#markSkipped').addEventListener('click', () => {
+            this.showDescriptionModal(date, 'skipped');
+            document.body.removeChild(modal);
+        });
+    }
+
+    showDescriptionModal(date, status) {
+        const statusText = status === 'completed' ? 'completado' : 'omitido';
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>¿Por qué marcaste este día como ${statusText}?</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea id="dayDescription" placeholder="Ej: ${status === 'completed' ? 'Hice ejercicio extra' : 'Estuve enfermo'}"></textarea>
+                </div>
+                <button class="btn btn-secondary" id="confirmMark">Confirmar</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.close-btn').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+
+        modal.querySelector('#confirmMark').addEventListener('click', () => {
+            const description = document.getElementById('dayDescription').value.trim();
+            this.app.markDay(this.selectedGoal.id, date, status, description);
+            document.body.removeChild(modal);
+            this.app.showHome(this.selectedGoal.id);
         });
     }
 }

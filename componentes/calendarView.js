@@ -62,9 +62,6 @@ export class CalendarView {
                 <button class="view-btn ${this.viewType === 'dual' ? 'active' : ''}" data-view="dual">
                     Dual
                 </button>
-                <button class="view-btn ${this.viewType === 'bar' ? 'active' : ''}" data-view="bar">
-                    Barra
-                </button>
                 <button class="view-btn ${this.viewType === 'single' ? 'active' : ''}" data-view="single">
                     Simple
                 </button>
@@ -76,11 +73,23 @@ export class CalendarView {
         switch (this.viewType) {
             case 'dual':
                 return this.renderDualView();
-            case 'simple':
+            case 'single':
                 return this.renderSingleView();
             default:
                 return this.renderDualView();
         }
+    }
+
+    renderSingleView() {
+        const currentDate = new Date();
+        const currentMonth = this.getMonthData(currentDate);
+
+        return `
+            <div>
+                <h3 style="margin: 20px 0 10px 0; text-align: center;">Mes actual</h3>
+                ${this.renderCalendar(currentMonth, currentDate)}
+            </div>
+        `;
     }
 
     renderDualView() {

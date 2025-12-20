@@ -13,7 +13,7 @@ class App {
         this.currentGoal = null;
         this.goals = [];
         this.hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
-        this.settings = { dailyDescription: true };
+        this.settings = { dailyDescription: true, theme: 'light', notifications: false };
         this.selectedGoalId = null;
         this.firebaseService = firebaseService;
         this.isOfflineMode = localStorage.getItem('offlineMode') === 'true';
@@ -21,6 +21,16 @@ class App {
     }
 
     async init() {
+        // Registrar service worker para notificaciones
+        if ('serviceWorker' in navigator) {
+            try {
+                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('Service Worker registrado');
+            } catch (error) {
+                console.error('Error registrando SW:', error);
+            }
+        }
+
         // Mostrar loading
         this.render('<div class="welcome-screen"><div class="welcome-icon">⏳</div><h2>Cargando...</h2></div>');
 
@@ -48,12 +58,14 @@ class App {
             this.showWelcome();
         }
         this.checkDailyGoals();
+        this.checkNotifications();
     }
 
     async loadFromFirebase() {
         try {
             this.goals = await this.firebaseService.getGoals();
             this.settings = await this.firebaseService.getSettings();
+            this.applyTheme();
         } catch (error) {
             console.error('Error al cargar datos de Firebase:', error);
             this.loadFromLocalStorage();
@@ -65,7 +77,10 @@ class App {
         this.goals = stored ? JSON.parse(stored) : [];
         
         const storedSettings = localStorage.getItem('settings');
-        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true };
+        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true, theme: 'light', notifications: false };
+        
+        // Aplicar tema
+        this.applyTheme();
     }
 
     showWelcome() {
@@ -108,21 +123,67 @@ class App {
     }
 
     async handleAuthSuccess() {
+        // Cambiar a modo online
+        this.isOfflineMode = false;
+        localStorage.removeItem('offlineMode');
+        
         // Sincronizar datos locales con Firebase si existen
         const localGoals = localStorage.getItem('goals');
         if (localGoals) {
             const goals = JSON.parse(localGoals);
             if (goals.length > 0) {
-                const syncConfirm = confirm('¿Deseas sincronizar tus objetivos locales con tu cuenta?');
-                if (syncConfirm) {
-                    await this.firebaseService.syncLocalToFirebase(goals, this.settings);
-                }
+                await this.showSyncModal(goals);
             }
         }
         
         // Cargar datos de Firebase
         await this.loadFromFirebase();
         this.checkInitialScreen();
+    }
+
+    async showSyncModal(goals) {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>¿Sincronizar datos?</h2>
+                        <button class="close-btn">&times;</button>
+                    </div>
+                    <p>Se encontraron ${goals.length} objetivos locales. ¿Deseas sincronizarlos con tu cuenta de Firebase?</p>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="syncYes">Sí, sincronizar</button>
+                        <button class="btn btn-outline" id="syncNo">No, gracias</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.querySelector('.close-btn').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                resolve(false);
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                    resolve(false);
+                }
+            });
+
+            modal.querySelector('#syncYes').addEventListener('click', async () => {
+                await this.firebaseService.syncLocalToFirebase(goals, this.settings);
+                document.body.removeChild(modal);
+                resolve(true);
+            });
+
+            modal.querySelector('#syncNo').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                resolve(false);
+            });
+        });
     }
 
     async saveData() {
@@ -225,7 +286,9 @@ class App {
         }
     }
 
-    generateDays(startDate, endDate) {
+    applyTheme() {
+        document.body.setAttribute('data-theme', this.settings.theme || 'light');
+    }
         const days = [];
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -292,7 +355,28 @@ class App {
         };
     }
 
-    getGoalStreak(goal) {
+    checkNotifications() {
+        if (!this.settings.notifications || Notification.permission !== 'granted') return;
+
+        const today = new Date().toISOString().split('T')[0];
+        let pendingCount = 0;
+
+        this.goals.forEach(goal => {
+            if (!goal.hidden) {
+                const todayDay = goal.days.find(d => d.date === today);
+                if (todayDay && todayDay.status === 'pending') {
+                    pendingCount++;
+                }
+            }
+        });
+
+        if (pendingCount > 0) {
+            new Notification('Recordatorio diario', {
+                body: `Tienes ${pendingCount} objetivo(s) pendiente(s) para hoy.`,
+                icon: '/favicon.ico' // o algún icono
+            });
+        }
+    }
         let streak = 0;
         const today = new Date().toISOString().split('T')[0];
         

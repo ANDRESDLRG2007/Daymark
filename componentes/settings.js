@@ -40,9 +40,35 @@ export class Settings {
 
                     <div class="setting-item">
                         <div class="setting-label">
+                            <div class="setting-title">Modo oscuro</div>
+                            <div class="setting-description">
+                                Cambiar entre tema claro y oscuro
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="themeToggle" ${this.app.settings.theme === 'dark' ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <div class="setting-title">Recordatorios diarios</div>
+                            <div class="setting-description">
+                                Mostrar notificación al abrir la app si hay días pendientes
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notificationsToggle" ${this.app.settings.notifications ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
                             <div class="setting-title">Acerca de</div>
                             <div class="setting-description">
-                                Planificador de Objetivos v1.0
+                                Planificador de Objetivos v0.2
                             </div>
                         </div>
                     </div>
@@ -103,6 +129,34 @@ export class Settings {
         const dailyDescToggle = document.getElementById('dailyDescriptionToggle');
         dailyDescToggle.addEventListener('change', (e) => {
             this.app.settings.dailyDescription = e.target.checked;
+            this.app.saveData();
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('change', (e) => {
+            this.app.settings.theme = e.target.checked ? 'dark' : 'light';
+            this.app.applyTheme();
+            this.app.saveData();
+        });
+
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        notificationsToggle.addEventListener('change', async (e) => {
+            this.app.settings.notifications = e.target.checked;
+            if (e.target.checked) {
+                // Pedir permiso para notificaciones
+                if ('Notification' in window) {
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') {
+                        alert('Permiso denegado para notificaciones');
+                        e.target.checked = false;
+                        this.app.settings.notifications = false;
+                    }
+                } else {
+                    alert('Tu navegador no soporta notificaciones');
+                    e.target.checked = false;
+                    this.app.settings.notifications = false;
+                }
+            }
             this.app.saveData();
         });
 
