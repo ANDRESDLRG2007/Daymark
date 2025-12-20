@@ -57,8 +57,8 @@ Una aplicación web moderna para la planificación y seguimiento de objetivos pe
    Luego visita `http://localhost:8000`
 
 ### Acceso Directo
-- **Versión Web (PC)**: [https://andresdlrg2007.github.io/app-de-metas/](https://andresdlrg2007.github.io/app-de-metas/)
-- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/1LimWb5s2fHoxzr-M_aQqwNgy-ITsISvn/view?usp=sharing)
+- **Versión Web (PC)**: [https://andresdlrg2007.github.io/app-de-metas/](https://andresdlrg2007.github.io/Daymark/)
+- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/125cx0O6FAnTkQyHk1GugSRgsiIbD6eNL/view?usp=sharing)
 
 ### Configuración Inicial
 1. **Primera vez**: Verás la pantalla de bienvenida
