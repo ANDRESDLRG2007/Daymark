@@ -13,7 +13,7 @@ class App {
         this.currentGoal = null;
         this.goals = [];
         this.hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
-        this.settings = { dailyDescription: true, theme: 'light' };
+        this.settings = { dailyDescription: true, theme: 'light', heavyStyle: false };
         this.selectedGoalId = null;
         this.firebaseService = firebaseService;
         this.isOfflineMode = localStorage.getItem('offlineMode') === 'true';
@@ -55,6 +55,7 @@ class App {
             this.goals = await this.firebaseService.getGoals();
             this.settings = await this.firebaseService.getSettings();
             this.applyTheme();
+            this.applyStyle();
         } catch (error) {
             console.error('Error al cargar datos de Firebase:', error);
             this.loadFromLocalStorage();
@@ -66,10 +67,11 @@ class App {
         this.goals = stored ? JSON.parse(stored) : [];
         
         const storedSettings = localStorage.getItem('settings');
-        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true, theme: 'light' };
+        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true, theme: 'light', heavyStyle: false };
         
-        // Aplicar tema
+        // Aplicar tema y estilo
         this.applyTheme();
+        this.applyStyle();
     }
 
     showWelcome() {
@@ -277,6 +279,23 @@ class App {
 
     applyTheme() {
         document.body.setAttribute('data-theme', this.settings.theme || 'light');
+    }
+
+    applyStyle() {
+        const existingHeavy = document.getElementById('heavy-style');
+        if (this.settings.heavyStyle) {
+            if (!existingHeavy) {
+                const link = document.createElement('link');
+                link.id = 'heavy-style';
+                link.rel = 'stylesheet';
+                link.href = 'heavy-style.css';
+                document.head.appendChild(link);
+            }
+        } else {
+            if (existingHeavy) {
+                existingHeavy.remove();
+            }
+        }
     }
 
     generateDays(startDate, endDate) {

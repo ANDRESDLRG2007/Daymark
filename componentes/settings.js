@@ -53,6 +53,19 @@ export class Settings {
 
                     <div class="setting-item">
                         <div class="setting-label">
+                            <div class="setting-title">Estilos heavy</div>
+                            <div class="setting-description">
+                                Activar estilos avanzados con más animaciones
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="heavyStyleToggle" ${this.app.settings.heavyStyle ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
                             <div class="setting-title">Acerca de</div>
                             <div class="setting-description">
                                 Planificador de Objetivos v0.2
@@ -123,6 +136,13 @@ export class Settings {
         themeToggle.addEventListener('change', (e) => {
             this.app.settings.theme = e.target.checked ? 'dark' : 'light';
             this.app.applyTheme();
+            this.app.saveData();
+        });
+
+        const heavyStyleToggle = document.getElementById('heavyStyleToggle');
+        heavyStyleToggle.addEventListener('change', (e) => {
+            this.app.settings.heavyStyle = e.target.checked;
+            this.app.applyStyle();
             this.app.saveData();
         });
 
