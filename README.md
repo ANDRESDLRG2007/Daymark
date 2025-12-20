@@ -58,7 +58,7 @@ Una aplicación web moderna para la planificación y seguimiento de objetivos pe
 
 ### Acceso Directo
 - **Versión Web (PC)**: [https://andresdlrg2007.github.io/app-de-metas/](https://andresdlrg2007.github.io/Daymark/)
-- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/125cx0O6FAnTkQyHk1GugSRgsiIbD6eNL/view?usp=sharing)
+- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/1M7zB6lPSBZEqGuiuRtV-IPWWvoDdS3PX/view?usp=sharing)
 
 ### Configuración Inicial
 1. **Primera vez**: Verás la pantalla de bienvenida
