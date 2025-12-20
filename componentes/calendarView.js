@@ -76,9 +76,7 @@ export class CalendarView {
         switch (this.viewType) {
             case 'dual':
                 return this.renderDualView();
-            case 'bar':
-                return this.renderBarView();
-            case 'single':
+            case 'simple':
                 return this.renderSingleView();
             default:
                 return this.renderDualView();
@@ -96,19 +94,6 @@ export class CalendarView {
                 
                 <h3 style="margin: 30px 0 10px 0; text-align: center;">Mes de finalización</h3>
                 ${this.renderCalendar(endMonth, this.endDate)}
-            </div>
-        `;
-    }
-
-    renderBarView() {
-        const startMonth = this.getMonthData(this.startDate);
-        const progress = this.app.getGoalProgress(this.goal);
-
-        return `
-            <div>
-                <h3 style="margin: 20px 0 10px 0; text-align: center;">Mes de inicio</h3>
-                ${this.renderCalendar(startMonth, this.startDate)}
-                ${this.renderProgressBar(progress)}
             </div>
         `;
     }

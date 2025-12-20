@@ -6,11 +6,25 @@ export class Settings {
     render() {
         setTimeout(() => this.attachEvents(), 0);
 
+        const user = this.app.firebaseService.getCurrentUser();
+        const isOnline = !this.app.isOfflineMode && user;
+
         return `
             <div class="container">
                 <h2 style="margin-bottom: 20px;">⚙️ Configuración</h2>
                 
                 <div class="settings-container">
+                    ${isOnline ? `
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">👤 Cuenta</div>
+                                <div class="setting-description">
+                                    ${user.email}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+
                     <div class="setting-item">
                         <div class="setting-label">
                             <div class="setting-title">Descripción diaria</div>
@@ -33,17 +47,25 @@ export class Settings {
                         </div>
                     </div>
 
-                    <div class="setting-item" style="border-bottom: none;">
-                        <div class="setting-label">
-                            <div class="setting-title">Funciones futuras</div>
-                            <div class="setting-description">
-                                • Inicio de sesión para sincronizar entre dispositivos<br>
-                                • Notificaciones diarias<br>
-                                • Estadísticas avanzadas<br>
-                                • Temas personalizados
-                            </div>
+                    ${isOnline ? `
+                        <div class="setting-item" style="border-bottom: none;">
+                            <button class="btn btn-danger" id="logoutBtn" style="width: 100%;">
+                                🚪 Cerrar Sesión
+                            </button>
                         </div>
-                    </div>
+                    ` : `
+                        <div class="setting-item" style="border-bottom: none;">
+                            <div class="setting-label">
+                                <div class="setting-title">Modo offline</div>
+                                <div class="setting-description">
+                                    Estás usando la app sin cuenta. Tus datos solo se guardan en este dispositivo.
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="loginBtn" style="margin-top: 10px; width: 100%;">
+                                🔑 Iniciar Sesión / Registrarse
+                            </button>
+                        </div>
+                    `}
                 </div>
 
                 <button class="btn btn-secondary" style="margin-top: 20px;" id="backBtn">
@@ -81,12 +103,30 @@ export class Settings {
         const dailyDescToggle = document.getElementById('dailyDescriptionToggle');
         dailyDescToggle.addEventListener('change', (e) => {
             this.app.settings.dailyDescription = e.target.checked;
-            this.app.saveSettings();
+            this.app.saveData();
         });
 
         document.getElementById('backBtn').addEventListener('click', () => {
             this.app.showHome();
         });
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                    await this.app.firebaseService.logout();
+                    localStorage.removeItem('offlineMode');
+                    window.location.reload();
+                }
+            });
+        }
+
+        const loginBtn = document.getElementById('loginBtn');
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                this.app.showAuth();
+            });
+        }
 
         document.getElementById('addGoalBtn').addEventListener('click', () => {
             this.app.showGoalForm();

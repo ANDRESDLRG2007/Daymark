@@ -4,45 +4,68 @@ import { Home } from './home.js';
 import { GoalsList } from './goalsList.js';
 import { CalendarView } from './calendarView.js';
 import { Settings } from './settings.js';
+import { AuthScreen } from './auth.js';
+import { firebaseService } from './firebase.js';
 
 class App {
     constructor() {
-        this.currentScreen = 'welcome';
+        this.currentScreen = 'loading';
         this.currentGoal = null;
-        this.goals = this.loadGoals();
+        this.goals = [];
         this.hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
-        this.settings = this.loadSettings();
+        this.settings = { dailyDescription: true };
         this.selectedGoalId = null;
+        this.firebaseService = firebaseService;
+        this.isOfflineMode = localStorage.getItem('offlineMode') === 'true';
         this.init();
     }
 
-    loadGoals() {
-        const stored = localStorage.getItem('goals');
-        return stored ? JSON.parse(stored) : [];
+    async init() {
+        // Mostrar loading
+        this.render('<div class="welcome-screen"><div class="welcome-icon">⏳</div><h2>Cargando...</h2></div>');
+
+        // Escuchar cambios de autenticación
+        this.firebaseService.onAuthChange(async (user) => {
+            if (user && !this.isOfflineMode) {
+                // Usuario autenticado - cargar datos de Firebase
+                await this.loadFromFirebase();
+                this.checkInitialScreen();
+            } else if (!this.isOfflineMode && !user) {
+                // No hay usuario - mostrar pantalla de login
+                this.showAuth();
+            } else {
+                // Modo offline - cargar datos locales
+                this.loadFromLocalStorage();
+                this.checkInitialScreen();
+            }
+        });
     }
 
-    saveGoals() {
-        localStorage.setItem('goals', JSON.stringify(this.goals));
-    }
-
-    loadSettings() {
-        const stored = localStorage.getItem('settings');
-        return stored ? JSON.parse(stored) : {
-            dailyDescription: true
-        };
-    }
-
-    saveSettings() {
-        localStorage.setItem('settings', JSON.stringify(this.settings));
-    }
-
-    init() {
+    checkInitialScreen() {
         if (this.hasSeenWelcome) {
             this.showHome();
         } else {
             this.showWelcome();
         }
         this.checkDailyGoals();
+    }
+
+    async loadFromFirebase() {
+        try {
+            this.goals = await this.firebaseService.getGoals();
+            this.settings = await this.firebaseService.getSettings();
+        } catch (error) {
+            console.error('Error al cargar datos de Firebase:', error);
+            this.loadFromLocalStorage();
+        }
+    }
+
+    loadFromLocalStorage() {
+        const stored = localStorage.getItem('goals');
+        this.goals = stored ? JSON.parse(stored) : [];
+        
+        const storedSettings = localStorage.getItem('settings');
+        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true };
     }
 
     showWelcome() {
@@ -71,6 +94,48 @@ class App {
         this.render(list.render());
     }
 
+    showAuth(isLogin = true) {
+        this.currentScreen = 'auth';
+        const auth = new AuthScreen(this, isLogin);
+        this.render(auth.render());
+    }
+
+    continueOffline() {
+        this.isOfflineMode = true;
+        localStorage.setItem('offlineMode', 'true');
+        this.loadFromLocalStorage();
+        this.checkInitialScreen();
+    }
+
+    async handleAuthSuccess() {
+        // Sincronizar datos locales con Firebase si existen
+        const localGoals = localStorage.getItem('goals');
+        if (localGoals) {
+            const goals = JSON.parse(localGoals);
+            if (goals.length > 0) {
+                const syncConfirm = confirm('¿Deseas sincronizar tus objetivos locales con tu cuenta?');
+                if (syncConfirm) {
+                    await this.firebaseService.syncLocalToFirebase(goals, this.settings);
+                }
+            }
+        }
+        
+        // Cargar datos de Firebase
+        await this.loadFromFirebase();
+        this.checkInitialScreen();
+    }
+
+    async saveData() {
+        if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+            // Guardar en Firebase
+            await this.firebaseService.saveSettings(this.settings);
+        } else {
+            // Guardar en localStorage
+            localStorage.setItem('goals', JSON.stringify(this.goals));
+            localStorage.setItem('settings', JSON.stringify(this.settings));
+        }
+    }
+
     showSettings() {
         this.currentScreen = 'settings';
         const settings = new Settings(this);
@@ -91,7 +156,14 @@ class App {
         goal.id = Date.now().toString();
         goal.days = this.generateDays(goal.startDate, goal.endDate);
         this.goals.push(goal);
-        this.saveGoals();
+        
+        // Guardar
+        if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+            this.firebaseService.saveGoal(goal);
+        } else {
+            localStorage.setItem('goals', JSON.stringify(this.goals));
+        }
+        
         this.showHome(goal.id);
     }
 
@@ -114,14 +186,28 @@ class App {
             }
             
             this.goals[index] = { ...oldGoal, ...updatedGoal };
-            this.saveGoals();
+            
+            // Guardar
+            if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+                this.firebaseService.updateGoal(goalId, this.goals[index]);
+            } else {
+                localStorage.setItem('goals', JSON.stringify(this.goals));
+            }
+            
             this.showHome(goalId);
         }
     }
 
     deleteGoal(goalId) {
         this.goals = this.goals.filter(g => g.id !== goalId);
-        this.saveGoals();
+        
+        // Guardar
+        if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+            this.firebaseService.deleteGoal(goalId);
+        } else {
+            localStorage.setItem('goals', JSON.stringify(this.goals));
+        }
+        
         this.showGoalsList();
     }
 
@@ -129,7 +215,13 @@ class App {
         const goal = this.goals.find(g => g.id === goalId);
         if (goal) {
             goal.hidden = !goal.hidden;
-            this.saveGoals();
+            
+            // Guardar
+            if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+                this.firebaseService.updateGoal(goalId, goal);
+            } else {
+                localStorage.setItem('goals', JSON.stringify(this.goals));
+            }
         }
     }
 
@@ -156,7 +248,13 @@ class App {
             if (day && day.status === 'pending') {
                 day.status = status;
                 day.description = description;
-                this.saveGoals();
+                
+                // Guardar
+                if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+                    this.firebaseService.updateGoal(goalId, goal);
+                } else {
+                    localStorage.setItem('goals', JSON.stringify(this.goals));
+                }
             }
         }
     }
@@ -174,7 +272,14 @@ class App {
             }
         });
         
-        this.saveGoals();
+        // Guardar
+        if (!this.isOfflineMode && this.firebaseService.isAuthenticated()) {
+            this.goals.forEach(goal => {
+                this.firebaseService.updateGoal(goal.id, goal);
+            });
+        } else {
+            localStorage.setItem('goals', JSON.stringify(this.goals));
+        }
     }
 
     getGoalProgress(goal) {
