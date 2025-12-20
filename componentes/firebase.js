@@ -16,11 +16,6 @@ import {
     updateDoc,
     deleteDoc 
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { 
-    getMessaging, 
-    getToken, 
-    onMessage 
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDfa_R44zVIApFqLgMOUW6yaxkQdWIlOgI",
@@ -36,13 +31,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const messaging = getMessaging(app);
 
 export class FirebaseService {
     constructor() {
         this.auth = auth;
         this.db = db;
-        this.messaging = messaging;
         this.currentUser = null;
     }
 
@@ -259,36 +252,6 @@ export class FirebaseService {
     // Obtener usuario actual
     getCurrentUser() {
         return this.currentUser;
-    }
-
-    // Solicitar permiso para notificaciones
-    async requestNotificationPermission() {
-        try {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                const token = await getToken(this.messaging, { vapidKey: 'BMB__zfeNOEpmS8u30oA8FGSDXM58A6IckgnaIKuRNDyfQsQy856ouemi-v8QbU4MEuZz9huZhQydxW0MLev1Wg' });
-                console.log('Token de notificación:', token);
-                // Guardar token en Firestore para enviar notificaciones
-                if (this.currentUser) {
-                    await setDoc(doc(this.db, 'users', this.currentUser.uid, 'tokens', token), {
-                        token: token,
-                        createdAt: new Date().toISOString()
-                    });
-                }
-                return token;
-            }
-            return null;
-        } catch (error) {
-            console.error('Error al solicitar permiso:', error);
-            return null;
-        }
-    }
-
-    // Escuchar mensajes de notificación
-    onMessageReceived(callback) {
-        onMessage(this.messaging, (payload) => {
-            callback(payload);
-        });
     }
 }
 

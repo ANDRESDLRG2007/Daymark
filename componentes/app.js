@@ -13,7 +13,7 @@ class App {
         this.currentGoal = null;
         this.goals = [];
         this.hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
-        this.settings = { dailyDescription: true, theme: 'light', notifications: false };
+        this.settings = { dailyDescription: true, theme: 'light' };
         this.selectedGoalId = null;
         this.firebaseService = firebaseService;
         this.isOfflineMode = localStorage.getItem('offlineMode') === 'true';
@@ -21,16 +21,6 @@ class App {
     }
 
     async init() {
-        // Registrar service worker para notificaciones
-        if ('serviceWorker' in navigator) {
-            try {
-                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                console.log('Service Worker registrado');
-            } catch (error) {
-                console.error('Error registrando SW:', error);
-            }
-        }
-
         // Mostrar loading
         this.render('<div class="welcome-screen"><div class="welcome-icon">⏳</div><h2>Cargando...</h2></div>');
 
@@ -58,7 +48,6 @@ class App {
             this.showWelcome();
         }
         this.checkDailyGoals();
-        this.checkNotifications();
     }
 
     async loadFromFirebase() {
@@ -77,7 +66,7 @@ class App {
         this.goals = stored ? JSON.parse(stored) : [];
         
         const storedSettings = localStorage.getItem('settings');
-        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true, theme: 'light', notifications: false };
+        this.settings = storedSettings ? JSON.parse(storedSettings) : { dailyDescription: true, theme: 'light' };
         
         // Aplicar tema
         this.applyTheme();
@@ -289,6 +278,8 @@ class App {
     applyTheme() {
         document.body.setAttribute('data-theme', this.settings.theme || 'light');
     }
+
+    generateDays(startDate, endDate) {
         const days = [];
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -355,28 +346,7 @@ class App {
         };
     }
 
-    checkNotifications() {
-        if (!this.settings.notifications || Notification.permission !== 'granted') return;
-
-        const today = new Date().toISOString().split('T')[0];
-        let pendingCount = 0;
-
-        this.goals.forEach(goal => {
-            if (!goal.hidden) {
-                const todayDay = goal.days.find(d => d.date === today);
-                if (todayDay && todayDay.status === 'pending') {
-                    pendingCount++;
-                }
-            }
-        });
-
-        if (pendingCount > 0) {
-            new Notification('Recordatorio diario', {
-                body: `Tienes ${pendingCount} objetivo(s) pendiente(s) para hoy.`,
-                icon: '/favicon.ico' // o algún icono
-            });
-        }
-    }
+    getGoalStreak(goal) {
         let streak = 0;
         const today = new Date().toISOString().split('T')[0];
         
