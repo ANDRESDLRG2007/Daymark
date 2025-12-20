@@ -1,13 +1,13 @@
 import { CalendarView } from './calendarView.js';
 
 export class Home {
-    constructor(app, selectedGoalId = null) {
+    constructor(app, selectedGoalId = null, viewType = 'dual') {
         this.app = app;
         this.visibleGoals = app.goals.filter(g => !g.hidden);
         this.selectedGoal = selectedGoalId 
             ? this.visibleGoals.find(g => g.id === selectedGoalId) 
             : this.visibleGoals[0];
-        this.currentView = 'dual'; // dual, bar, single
+        this.currentView = viewType;
     }
 
     render() {
@@ -97,6 +97,10 @@ export class Home {
                     <div class="nav-btn-icon">📋</div>
                     <div class="nav-btn-label">Objetivos</div>
                 </button>
+                <button class="nav-btn" id="settingsBtn">
+                    <div class="nav-btn-icon">⚙️</div>
+                    <div class="nav-btn-label">Config</div>
+                </button>
             </div>
         `;
     }
@@ -131,12 +135,17 @@ export class Home {
             this.app.showGoalsList();
         });
 
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.app.showSettings();
+        });
+
         // Event listeners para cambiar vista
         const viewBtns = document.querySelectorAll('.view-btn');
         viewBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.currentView = e.target.dataset.view;
-                this.app.showHome(this.selectedGoal.id);
+                const newView = e.target.dataset.view;
+                // Cambiar vista completa
+                this.app.showHome(this.selectedGoal.id, newView);
             });
         });
 

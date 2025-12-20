@@ -76,6 +76,10 @@ export class GoalForm {
                     <button class="btn btn-secondary" id="submitGoal">
                         ${this.editGoal ? 'Actualizar' : 'Continuar'}
                     </button>
+                    
+                    <button class="btn" id="cancelEdit" style="background: var(--gray-color); color: white; margin-top: 10px;">
+                        Volver al inicio
+                    </button>
                 </div>
             </div>
         `;
@@ -94,6 +98,13 @@ export class GoalForm {
         document.getElementById('submitGoal').addEventListener('click', () => {
             this.handleSubmit();
         });
+
+        const cancelBtn = document.getElementById('cancelEdit');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.app.showHome(this.editGoal?.id);
+            });
+        }
     }
 
     handleSubmit() {

@@ -3,6 +3,7 @@ import { GoalForm } from './goalForm.js';
 import { Home } from './home.js';
 import { GoalsList } from './goalsList.js';
 import { CalendarView } from './calendarView.js';
+import { Settings } from './settings.js';
 
 class App {
     constructor() {
@@ -11,6 +12,7 @@ class App {
         this.goals = this.loadGoals();
         this.hasSeenWelcome = localStorage.getItem('hasSeenWelcome') === 'true';
         this.settings = this.loadSettings();
+        this.selectedGoalId = null;
         this.init();
     }
 
@@ -56,9 +58,10 @@ class App {
         this.render(form.render());
     }
 
-    showHome(selectedGoalId = null) {
+    showHome(selectedGoalId = null, viewType = 'dual') {
         this.currentScreen = 'home';
-        const home = new Home(this, selectedGoalId);
+        this.selectedGoalId = selectedGoalId;
+        const home = new Home(this, selectedGoalId, viewType);
         this.render(home.render());
     }
 
@@ -66,6 +69,12 @@ class App {
         this.currentScreen = 'goalsList';
         const list = new GoalsList(this);
         this.render(list.render());
+    }
+
+    showSettings() {
+        this.currentScreen = 'settings';
+        const settings = new Settings(this);
+        this.render(settings.render());
     }
 
     render(html) {
@@ -89,8 +98,22 @@ class App {
     updateGoal(goalId, updatedGoal) {
         const index = this.goals.findIndex(g => g.id === goalId);
         if (index !== -1) {
-            updatedGoal.days = this.generateDays(updatedGoal.startDate, updatedGoal.endDate);
-            this.goals[index] = { ...this.goals[index], ...updatedGoal };
+            const oldGoal = this.goals[index];
+            const datesChanged = oldGoal.startDate !== updatedGoal.startDate || 
+                                oldGoal.endDate !== updatedGoal.endDate;
+            
+            if (datesChanged) {
+                const confirmMsg = '⚠️ Al cambiar las fechas se perderá todo el progreso actual.\n\n¿Deseas continuar?';
+                if (!confirm(confirmMsg)) {
+                    this.showHome(goalId);
+                    return;
+                }
+                updatedGoal.days = this.generateDays(updatedGoal.startDate, updatedGoal.endDate);
+            } else {
+                updatedGoal.days = oldGoal.days;
+            }
+            
+            this.goals[index] = { ...oldGoal, ...updatedGoal };
             this.saveGoals();
             this.showHome(goalId);
         }

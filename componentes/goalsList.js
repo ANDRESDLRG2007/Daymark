@@ -112,6 +112,10 @@ export class GoalsList {
                     <div class="nav-btn-icon">📋</div>
                     <div class="nav-btn-label">Objetivos</div>
                 </button>
+                <button class="nav-btn" id="settingsBtn">
+                    <div class="nav-btn-icon">⚙️</div>
+                    <div class="nav-btn-label">Config</div>
+                </button>
             </div>
         `;
     }
@@ -127,6 +131,10 @@ export class GoalsList {
 
         document.getElementById('goalsListBtn').addEventListener('click', () => {
             this.app.showGoalsList();
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.app.showSettings();
         });
 
         const actionButtons = document.querySelectorAll('[data-action]');
