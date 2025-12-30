@@ -13,7 +13,7 @@ Daymark elimina la fricción de usar múltiples herramientas o agendas físicas,
 - Sincroniza tus metas en la nube cuando tienes conexión.
 
 **Enlaces de Acceso Rápido:**
-- **Versión Web (Demo)**: [https://andresdlrg2007.github.io/Daymark/](https://andresdlrg2007.github.io/app-de-metas/)
+- **Versión Web (Demo)**: [https://andresdlrg2007.github.io/Daymark/](https://andresdlrg2007.github.io/Daymark/)
 - **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/1M7zB6lPSBZEqGuiuRtV-IPWWvoDdS3PX/view?usp=sharing)
 
 ## 2. Instalación Rápida
