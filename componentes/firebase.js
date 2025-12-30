@@ -8,7 +8,8 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { 
     initializeFirestore,
-    enableIndexedDbPersistence,
+    persistentLocalCache,
+    persistentSingleTabManager,
     collection, 
     doc, 
     setDoc, 
@@ -31,13 +32,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
-
-try {
-    await enableIndexedDbPersistence(db);
-} catch (e) {
-    // ignore
-}
+const db = initializeFirestore(app, { 
+    experimentalAutoDetectLongPolling: true,
+    localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() })
+});
 
 export class FirebaseService {
     constructor() {
