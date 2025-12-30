@@ -7,7 +7,8 @@ import {
     onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { 
-    getFirestore, 
+    initializeFirestore,
+    enableIndexedDbPersistence,
     collection, 
     doc, 
     setDoc, 
@@ -30,7 +31,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+
+try {
+    await enableIndexedDbPersistence(db);
+} catch (e) {
+    // ignore
+}
 
 export class FirebaseService {
     constructor() {

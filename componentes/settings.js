@@ -68,7 +68,7 @@ export class Settings {
                         <div class="setting-label">
                             <div class="setting-title">Acerca de</div>
                             <div class="setting-description">
-                                Planificador de Objetivos v0.2
+                                Planificador de Objetivos v0.3
                             </div>
                         </div>
                     </div>
