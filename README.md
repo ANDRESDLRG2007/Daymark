@@ -1,157 +1,75 @@
 # Daymark
 
-Una aplicación web moderna para la planificación y seguimiento de objetivos personales. Permite crear metas con fechas específicas, marcar el progreso diario en un calendario interactivo y visualizar estadísticas de cumplimiento.
+## 1. Descripción
+**Daymark** es una aplicación web progresiva (PWA) moderna diseñada para la planificación y seguimiento detallado de objetivos personales y hábitos diarios.
 
-## ✨ Características
+**¿Para quién es?**
+Ideal para personas que buscan mejorar su productividad, mantener la constancia en nuevos hábitos o simplemente organizar sus metas a largo plazo de manera visual y estructurada.
 
-### 🎯 Gestión de Objetivos
-- **Crear objetivos**: Define metas con título, descripción, fechas de inicio y fin, y color personalizado
-- **Seguimiento diario**: Marca cada día como completado, pendiente, omitido o fallido
-- **Vista de calendario**: Calendario mensual interactivo para visualizar el progreso
-- **Lista de objetivos**: Gestiona múltiples objetivos activos
+**¿Qué problema resuelve?**
+Daymark elimina la fricción de usar múltiples herramientas o agendas físicas, ofreciendo una solución centralizada que:
+- Visualiza el progreso con calendarios interactivos y estadísticas claras.
+- Funciona sin conexión (Offline-first), asegurando que tus datos estén siempre accesibles.
+- Sincroniza tus metas en la nube cuando tienes conexión.
 
-### 📊 Estadísticas y Análisis
-- **Progreso visual**: Barras de progreso para cada objetivo
-- **Estadísticas generales**: Métricas de cumplimiento, días completados, etc.
-- **Vista dual**: Alterna entre calendario y lista de objetivos
+**Enlaces de Acceso Rápido:**
+- **Versión Web (Demo)**: [https://andresdlrg2007.github.io/Daymark/](https://andresdlrg2007.github.io/app-de-metas/)
+- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/1M7zB6lPSBZEqGuiuRtV-IPWWvoDdS3PX/view?usp=sharing)
 
-### 🎨 Personalización
-- **Modo oscuro**: Tema claro y oscuro para comodidad visual
-- **Estilos heavy**: Tema avanzado con animaciones elaboradas y paleta de colores armónica (solo modo claro)
-- **Colores personalizados**: Asigna colores únicos a cada objetivo
+## 2. Instalación Rápida
 
-### 🔐 Autenticación y Sincronización
-- **Cuenta de usuario**: Registro e inicio de sesión con Firebase
-- **Sincronización en la nube**: Datos guardados automáticamente en Firebase
-- **Modo offline**: Funciona sin conexión, sincroniza cuando hay internet
+### Requisitos Previos
+- Un navegador web moderno (Chrome, Edge, Firefox).
+- Python 3 (opcional, para servidor local) o cualquier extensión de "Live Server".
 
-### 📱 Interfaz Intuitiva
-- **Navegación por footer**: Acceso rápido a añadir objetivos, inicio, lista y configuración
-- **Animaciones suaves**: Transiciones y efectos visuales modernos
-- **Responsive**: Adaptable a diferentes tamaños de pantalla
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Frontend**: HTML5, CSS3, JavaScript (ES6 Modules)
-- **Backend**: Firebase (Authentication, Firestore)
-- **Estilos**: CSS Variables, Flexbox, Grid, Animaciones CSS
-- **Arquitectura**: Componentes modulares en JavaScript
-
-## 🚀 Instalación y Uso
-
-### Prerrequisitos
-- Navegador web moderno
-- Conexión a internet (para sincronización, opcional para modo offline)
-
-### Instalación
-1. Clona el repositorio:
+### Ejecución en 5 minutos
+1. **Clonar el repositorio**:
    ```bash
    git clone https://github.com/ANDRESDLRG2007/daymark.git
    cd daymark
    ```
 
-2. Abre el archivo `index.html` en tu navegador o inicia un servidor local:
+2. **Iniciar servidor local** (Recomendado para evitar bloqueos de CORS):
    ```bash
-   python3 -m http.server 8000
+   # Opción con Python 3
+   python -m http.server 8000
    ```
-   Luego visita `http://localhost:8000`
+   *O usa la extensión "Live Server" en VS Code.*
 
-### Acceso Directo
-- **Versión Web (PC)**: [https://andresdlrg2007.github.io/app-de-metas/](https://andresdlrg2007.github.io/Daymark/)
-- **Versión Móvil (APK)**: [Descargar desde Google Drive](https://drive.google.com/file/d/1M7zB6lPSBZEqGuiuRtV-IPWWvoDdS3PX/view?usp=sharing)
+3. **Abrir en el navegador**:
+   Visita `http://localhost:8000` en tu navegador favorito.
 
-### Configuración Inicial
-1. **Primera vez**: Verás la pantalla de bienvenida
-2. **Registro/Inicio**: Crea una cuenta o inicia sesión para sincronizar datos
-3. **Modo offline**: Si prefieres usar sin cuenta, selecciona "Modo offline"
+¡Listo! La aplicación cargará inmediatamente.
 
-## 📖 Guía de Uso
+## 3. Estado del Proyecto
+**Estado Actual**: 🟢 **Estable / En Mantenimiento Activo**
+- **Versión**: 1.0.0
+- **Última Actualización**: Diciembre 2025
 
-### Crear un Objetivo
-1. Ve a "Añadir" en el footer
-2. Completa el formulario:
-   - Título del objetivo
-   - Descripción detallada
-   - Fecha de inicio y fin
-   - Color personalizado
-3. Guarda el objetivo
+El proyecto cuenta con funcionalidades completas de CRUD, autenticación y sincronización. Se están realizando mejoras continuas en accesibilidad y rendimiento.
 
-### Marcar Progreso Diario
-1. En la vista de calendario, haz clic en un día
-2. Selecciona el estado: Completado, Omitido, Fallido
-3. Opcionalmente, añade una descripción diaria
+**Roadmap Futuro**:
+- [ ] Notificaciones push para recordatorios diarios.
+- [ ] Exportación de datos a PDF/CSV.
+- [ ] Gamificación avanzada (medallas y logros).
 
-### Gestionar Objetivos
-- **Editar**: Desde la lista de objetivos, edita detalles
-- **Eliminar**: Remueve objetivos completados o innecesarios
-- **Ver progreso**: Revisa la barra de progreso y estadísticas
+## 4. Documentación Adicional
 
-### Personalización
-- **Modo oscuro**: En Configuración, activa/desactiva el tema oscuro
-- **Estilos heavy**: Activa para un tema más animado con paleta armónica (solo claro)
+Para detalles técnicos profundos sobre la arquitectura y el código:
+👉 **[Ver Documentación Técnica Completa](DOCUMENTATION.md)**
 
-## ⚙️ Configuración
+### Preguntas Frecuentes (FAQ)
+**P: ¿Necesito internet para usarla?**
+R: No. Daymark funciona 100% offline y sincroniza tus datos cuando recuperas la conexión.
 
-### Opciones Disponibles
-- **Descripción diaria**: Pedir descripción al marcar días como completados
-- **Modo oscuro**: Cambiar entre tema claro y oscuro
-- **Estilos heavy**: Activar tema avanzado con más animaciones
-- **Cuenta**: Gestionar autenticación y datos
+**P: ¿Es seguro?**
+R: Sí. Utilizamos Firebase Authentication para gestionar tu cuenta y proteger tus datos.
 
-### Modo Offline
-Si eliges no crear cuenta:
-- Los datos se guardan localmente en tu navegador
-- No hay sincronización entre dispositivos
-- Puedes cambiar a cuenta después desde Configuración
-
-## 📁 Estructura del Proyecto
-
-```
-daymark/
-├── index.html              # Archivo principal HTML
-├── style.css               # Estilos principales
-├── heavy-style.css         # Estilos avanzados (opcional)
-├── componentes/
-│   ├── app.js              # Lógica principal de la aplicación
-│   ├── auth.js             # Componente de autenticación
-│   ├── calendarView.js     # Vista del calendario
-│   ├── firebase.js         # Configuración de Firebase
-│   ├── goalForm.js         # Formulario de objetivos
-│   ├── goalsList.js        # Lista de objetivos
-│   ├── home.js             # Pantalla principal
-│   ├── settings.js         # Configuración
-│   └── welcome.js          # Pantalla de bienvenida
-└── README.md               # Este archivo
-```
-
-## 🔧 Desarrollo
-
-### Arquitectura
-- **Componentes modulares**: Cada pantalla es un componente independiente
-- **Estado centralizado**: La clase `App` maneja el estado global
-- **Firebase integration**: Servicios de autenticación y base de datos
-- **CSS Variables**: Temas dinámicos con variables CSS
-
-### Scripts Disponibles
-- **Servidor local**: `python3 -m http.server 8000`
-- **Desarrollo**: Abre `index.html` directamente en el navegador
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto es de uso personal. Todos los derechos reservados.
-
-## 📞 Contacto
-
-Proyecto desarrollado por ANDRESDLRG2007 - Daymark
+### Cómo Contribuir
+¡Las contribuciones son bienvenidas!
+1. Haz un Fork del repositorio.
+2. Crea una rama para tu mejora (`git checkout -b feature/NuevaMejora`).
+3. Envía un Pull Request describiendo tus cambios.
 
 ---
-
-*Última actualización: Diciembre 2025*
+*Desarrollado por ANDRESDLRG2007*

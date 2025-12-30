@@ -125,6 +125,11 @@ export class Settings {
         `;
     }
 
+    /**
+     * @method attachEvents
+     * @description Asigna los manejadores de eventos para los controles de configuración.
+     * Gestiona cambios en toggles (tema, descripción, estilos) y botones de sesión/navegación.
+     */
     attachEvents() {
         const dailyDescToggle = document.getElementById('dailyDescriptionToggle');
         dailyDescToggle.addEventListener('change', (e) => {

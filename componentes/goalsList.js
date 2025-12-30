@@ -97,6 +97,11 @@ export class GoalsList {
         `;
     }
 
+    /**
+     * @method renderFooter
+     * @description Genera la barra de navegación inferior.
+     * @returns {string} HTML de la barra de navegación.
+     */
     renderFooter() {
         return `
             <div class="footer-nav">
@@ -120,6 +125,11 @@ export class GoalsList {
         `;
     }
 
+    /**
+     * @method attachEvents
+     * @description Asigna los manejadores de eventos para la navegación y acciones de los objetivos.
+     * Maneja eventos de: navegación (footer) y acciones de tarjeta (editar, borrar, toggle, ver).
+     */
     attachEvents() {
         document.getElementById('addGoalBtn').addEventListener('click', () => {
             this.app.showGoalForm();
@@ -147,6 +157,12 @@ export class GoalsList {
         });
     }
 
+    /**
+     * @method handleAction
+     * @description Procesa las acciones disparadas desde las tarjetas de objetivos.
+     * @param {string} action - Tipo de acción ('edit', 'toggle', 'delete', 'view').
+     * @param {string} goalId - ID del objetivo sobre el que se realiza la acción.
+     */
     handleAction(action, goalId) {
         const goal = this.app.goals.find(g => g.id === goalId);
         if (!goal) return;

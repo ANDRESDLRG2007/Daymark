@@ -85,6 +85,11 @@ export class GoalForm {
         `;
     }
 
+    /**
+     * @method attachEvents
+     * @description Asigna los manejadores de eventos a los elementos del formulario.
+     * Incluye selección de color, envío del formulario y cancelación.
+     */
     attachEvents() {
         const colorOptions = document.querySelectorAll('.color-option');
         colorOptions.forEach(option => {
@@ -107,6 +112,12 @@ export class GoalForm {
         }
     }
 
+    /**
+     * @method handleSubmit
+     * @description Valida y procesa los datos del formulario.
+     * Verifica campos obligatorios y consistencia de fechas antes de guardar.
+     * Llama a app.updateGoal o app.addGoal según corresponda.
+     */
     handleSubmit() {
         const title = document.getElementById('goalTitle').value.trim();
         const description = document.getElementById('goalDescription').value.trim();

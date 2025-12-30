@@ -1,9 +1,25 @@
+/**
+ * @class AuthScreen
+ * @description Componente de interfaz de usuario para el manejo de autenticación.
+ * Gestiona tanto el inicio de sesión como el registro de nuevos usuarios.
+ * Interactúa directamente con la instancia de App para delegar la lógica de autenticación.
+ */
 export class AuthScreen {
+    /**
+     * @constructor
+     * @param {App} app - Instancia principal de la aplicación.
+     * @param {boolean} [isLogin=true] - Estado inicial: true para Login, false para Registro.
+     */
     constructor(app, isLogin = true) {
         this.app = app;
         this.isLogin = isLogin;
     }
 
+    /**
+     * @method render
+     * @description Genera el HTML del formulario de autenticación.
+     * @returns {string} HTML del componente.
+     */
     render() {
         setTimeout(() => this.attachEvents(), 0);
 
@@ -87,6 +103,11 @@ export class AuthScreen {
         `;
     }
 
+    /**
+     * @method attachEvents
+     * @description Asocia los event listeners a los elementos del DOM después del renderizado.
+     * Maneja clics en botones y la tecla Enter en inputs.
+     */
     attachEvents() {
         const authButton = document.getElementById('authButton');
         const toggleAuth = document.getElementById('toggleAuth');
@@ -116,6 +137,13 @@ export class AuthScreen {
         });
     }
 
+    /**
+     * @async
+     * @method handleAuth
+     * @description Procesa la solicitud de autenticación.
+     * Valida entradas, gestiona el estado de carga y delega la operación a FirebaseService.
+     * @returns {Promise<void>}
+     */
     async handleAuth() {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
@@ -173,12 +201,23 @@ export class AuthScreen {
         }
     }
 
+    /**
+     * @method showError
+     * @description Muestra mensajes de error en la interfaz.
+     * @param {string} message - Mensaje a mostrar.
+     */
     showError(message) {
         const errorMessage = document.getElementById('errorMessage');
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
     }
 
+    /**
+     * @method isValidEmail
+     * @description Valida el formato del correo electrónico usando Regex.
+     * @param {string} email - Correo a validar.
+     * @returns {boolean} True si es válido.
+     */
     isValidEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);

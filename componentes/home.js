@@ -1,6 +1,18 @@
 import { CalendarView } from './calendarView.js';
 
+/**
+ * @class Home
+ * @description Componente principal del dashboard.
+ * Muestra el calendario del objetivo seleccionado, permite registrar progreso diario
+ * y navegar entre diferentes objetivos.
+ */
 export class Home {
+    /**
+     * @constructor
+     * @param {App} app - Instancia principal de la aplicación.
+     * @param {string} [selectedGoalId=null] - ID del objetivo seleccionado inicialmente.
+     * @param {string} [viewType='dual'] - Tipo de vista del calendario ('dual' o 'single').
+     */
     constructor(app, selectedGoalId = null, viewType = 'dual') {
         this.app = app;
         this.visibleGoals = app.goals.filter(g => !g.hidden);
@@ -10,6 +22,13 @@ export class Home {
         this.currentView = viewType;
     }
 
+    /**
+     * @method render
+     * @description Genera el HTML del dashboard.
+     * Incluye selector de objetivos, vista de calendario (CalendarView) y botones de acción.
+     * Si no hay objetivo seleccionado, muestra el estado vacío.
+     * @returns {string} HTML del componente.
+     */
     render() {
         if (!this.selectedGoal) {
             return this.renderEmpty();
@@ -29,6 +48,11 @@ export class Home {
         `;
     }
 
+    /**
+     * @method renderEmpty
+     * @description Genera la vista de estado vacío cuando no hay objetivos visibles.
+     * @returns {string} HTML del estado vacío.
+     */
     renderEmpty() {
         setTimeout(() => this.attachEvents(), 0);
 
@@ -49,6 +73,12 @@ export class Home {
         `;
     }
 
+    /**
+     * @method renderGoalSelector
+     * @description Renderiza el selector desplegable para cambiar entre objetivos.
+     * Solo se muestra si hay más de un objetivo visible.
+     * @returns {string} HTML del selector o cadena vacía.
+     */
     renderGoalSelector() {
         if (this.visibleGoals.length <= 1) return '';
 
@@ -65,6 +95,12 @@ export class Home {
         `;
     }
 
+    /**
+     * @method renderActions
+     * @description Renderiza los botones de acción para el día actual (Completar/Omitir).
+     * Solo se muestran si el día actual está pendiente.
+     * @returns {string} HTML de los botones de acción.
+     */
     renderActions() {
         const today = new Date().toISOString().split('T')[0];
         const todayDay = this.selectedGoal.days.find(d => d.date === today);
@@ -84,6 +120,11 @@ export class Home {
         `;
     }
 
+    /**
+     * @method renderFooter
+     * @description Genera la barra de navegación inferior.
+     * @returns {string} HTML de la barra de navegación.
+     */
     renderFooter() {
         return `
             <div class="footer-nav">
@@ -215,6 +256,11 @@ export class Home {
         });
     }
 
+    /**
+     * @method showSkipDayModal
+     * @description Muestra el modal para omitir el día actual.
+     * Solicita un motivo para la omisión.
+     */
     showSkipDayModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
@@ -253,6 +299,11 @@ export class Home {
         });
     }
 
+    /**
+     * @method showDayDetailsModal
+     * @description Muestra el detalle de un día pasado (completado u omitido).
+     * @param {Object} dayData - Datos del día seleccionado.
+     */
     showDayDetailsModal(dayData) {
         const date = new Date(dayData.date);
         const formattedDate = date.toLocaleDateString('es-ES', { 
@@ -293,6 +344,11 @@ export class Home {
         });
     }
 
+    /**
+     * @method showMarkDayModal
+     * @description Muestra el modal para marcar un día pasado como completado u omitido.
+     * @param {string} date - Fecha en formato YYYY-MM-DD.
+     */
     showMarkDayModal(date) {
         const dateObj = new Date(date);
         const formattedDate = dateObj.toLocaleDateString('es-ES', { 
@@ -349,6 +405,12 @@ export class Home {
         });
     }
 
+    /**
+     * @method showDescriptionModal
+     * @description Muestra un modal secundario para añadir una descripción al marcar un día.
+     * @param {string} date - Fecha a marcar.
+     * @param {string} status - Estado ('completed' o 'skipped').
+     */
     showDescriptionModal(date, status) {
         const statusText = status === 'completed' ? 'completado' : 'omitido';
         const modal = document.createElement('div');
